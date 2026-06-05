@@ -1,15 +1,9 @@
-// === Detectar si es mobile ===
-function isMobile() {
-    return window.innerWidth <= 768;
-}
+// === Manejo de filas ===
+function isMobile() { return window.innerWidth <= 768; }
 
-// === Agregar fila ===
 function agregarFila() {
-    if (isMobile()) {
-        agregarFilaMobile();
-    } else {
-        agregarFilaDesktop();
-    }
+    if (isMobile()) agregarFilaMobile();
+    else agregarFilaDesktop();
 }
 
 function agregarFilaDesktop() {
@@ -18,9 +12,9 @@ function agregarFilaDesktop() {
     tr.innerHTML = `
         <td><input type="text" list="list-categorias" placeholder="Categoría"></td>
         <td><input type="text" list="list-subcategorias" placeholder="Subcategoría"></td>
-        <td><input type="text" placeholder="Descripción"></td>
-        <td><input type="number" min="0" step="0.1" class="text-end" oninput="calcularTotales()"></td>
-        <td><input type="number" min="0" class="text-end" oninput="calcularTotales()"></td>
+        <td><input type="text" placeholder="Ítem"></td>
+        <td><input type="number" min="1" step="1" value="1" class="text-end" oninput="calcularTotales()"></td>
+        <td><input type="text" class="text-end precio-input" oninput="formatPrecio(this);calcularTotales()" placeholder="$0"></td>
         <td class="text-end total-celda">$0</td>
         <td class="text-center no-print"><button class="btn btn-sm btn-outline-danger" onclick="this.closest('tr').remove();calcularTotales()">×</button></td>
     `;
@@ -38,228 +32,201 @@ function agregarFilaMobile() {
             <input type="text" list="list-subcategorias" placeholder="Subcategoría">
         </div>
         <div class="row-full">
-            <input type="text" placeholder="Descripción del ítem">
+            <input type="text" placeholder="Ítem">
         </div>
         <div class="row-fields" style="margin-top:6px;">
-            <input type="number" min="0" step="0.1" placeholder="Cant." oninput="calcularTotales()">
-            <input type="number" min="0" placeholder="$ Unitario" oninput="calcularTotales()">
+            <input type="number" min="1" step="1" value="1" placeholder="Cant." oninput="calcularTotales()">
+            <input type="text" class="precio-input" placeholder="$0" oninput="formatPrecio(this);calcularTotales()">
         </div>
         <div class="item-total total-celda">$0</div>
     `;
     container.appendChild(card);
 }
 
-// === Calcular totales ===
+// === Formato de precio en tiempo real ===
+function formatPrecio(input) {
+    let raw = input.value.replace(/[^0-9]/g, '');
+    if (!raw) { input.value = ''; return; }
+    input.value = '$' + parseInt(raw).toLocaleString('es-CL');
+}
+
+function parsePrecio(val) {
+    return parseInt((val || '').replace(/[^0-9]/g, '')) || 0;
+}
+
+// === Cálculos ===
 function calcularTotales() {
     let subtotal = 0;
-
-    // Desktop rows
     document.querySelectorAll('#items-body-desktop tr').forEach(tr => {
-        const nums = tr.querySelectorAll('input[type="number"]');
-        const cant = parseFloat(nums[0]?.value) || 0;
-        const unit = parseFloat(nums[1]?.value) || 0;
+        const cant = parseFloat(tr.querySelector('input[type="number"]')?.value) || 0;
+        const unit = parsePrecio(tr.querySelector('.precio-input')?.value);
         const t = cant * unit;
         tr.querySelector('.total-celda').textContent = formatCLP(t);
         subtotal += t;
     });
-
-    // Mobile cards
     document.querySelectorAll('#items-body-mobile .item-card').forEach(card => {
-        const nums = card.querySelectorAll('input[type="number"]');
-        const cant = parseFloat(nums[0]?.value) || 0;
-        const unit = parseFloat(nums[1]?.value) || 0;
+        const cant = parseFloat(card.querySelector('input[type="number"]')?.value) || 0;
+        const unit = parsePrecio(card.querySelector('.precio-input')?.value);
         const t = cant * unit;
         card.querySelector('.total-celda').textContent = formatCLP(t);
         subtotal += t;
     });
-
     const iva = Math.round(subtotal * 0.19);
-    const total = subtotal + iva;
     document.getElementById('subtotal').textContent = formatCLP(subtotal);
     document.getElementById('neto').textContent = formatCLP(subtotal);
     document.getElementById('iva').textContent = formatCLP(iva);
-    document.getElementById('total').textContent = formatCLP(total);
+    document.getElementById('total').textContent = formatCLP(subtotal + iva);
 }
 
-function formatCLP(n) {
-    return '$' + Math.round(n).toLocaleString('es-CL');
-}
+function formatCLP(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
 
-// === Obtener items desde cualquier vista ===
+// === Obtener items ===
 function getItems() {
     const items = [];
-
     document.querySelectorAll('#items-body-desktop tr').forEach(tr => {
         const texts = tr.querySelectorAll('input[type="text"]');
-        const nums = tr.querySelectorAll('input[type="number"]');
-        items.push({
-            cat: texts[0]?.value || '',
-            sub: texts[1]?.value || '',
-            desc: texts[2]?.value || '',
-            cant: parseFloat(nums[0]?.value) || 0,
-            unit: parseFloat(nums[1]?.value) || 0
-        });
+        const cant = parseFloat(tr.querySelector('input[type="number"]')?.value) || 0;
+        const unit = parsePrecio(tr.querySelector('.precio-input')?.value);
+        items.push({ cat: texts[0]?.value||'', sub: texts[1]?.value||'', desc: texts[2]?.value||'', cant, unit });
     });
-
     document.querySelectorAll('#items-body-mobile .item-card').forEach(card => {
         const texts = card.querySelectorAll('input[type="text"]');
-        const nums = card.querySelectorAll('input[type="number"]');
-        items.push({
-            cat: texts[0]?.value || '',
-            sub: texts[1]?.value || '',
-            desc: texts[2]?.value || '',
-            cant: parseFloat(nums[0]?.value) || 0,
-            unit: parseFloat(nums[1]?.value) || 0
-        });
+        const cant = parseFloat(card.querySelector('input[type="number"]')?.value) || 0;
+        const unit = parsePrecio(card.querySelector('.precio-input')?.value);
+        items.push({ cat: texts[0]?.value||'', sub: texts[1]?.value||'', desc: texts[2]?.value||'', cant, unit });
     });
-
-    return items.filter(i => i.desc || i.cant || i.unit);
+    return items.filter(i => i.cat || i.sub || i.desc || i.unit);
 }
 
-// === Generación de PDF ===
-function generarPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'letter');
-    const w = doc.internal.pageSize.getWidth();
-    let y = 12;
+// === Generación de PDF sobre plantilla ===
+async function generarPDF() {
+    const pdfUrl = '../../OT plantilla.pdf';
+    const existingPdfBytes = await fetch(pdfUrl).then(res => res.arrayBuffer());
+    const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+    const page = pdfDoc.getPages()[0];
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
 
-    // Logo
-    try { doc.addImage(document.getElementById('logo-img'), 'JPEG', 10, 8, 40, 21); } catch(e) {}
+    const fontSize = 9;
+    const color = PDFLib.rgb(0.25, 0.25, 0.25);
 
-    // Header
-    doc.setFontSize(14);
-    doc.setFont(undefined, 'bold');
-    doc.text('MAXI TALLER', 130, y);
-    y += 5;
-    doc.setFontSize(7);
-    doc.setFont(undefined, 'normal');
-    doc.text('TALLER MECÁNICO, COMPRA VENTA DE', 130, y); y += 3;
-    doc.text('REPUESTOS DE VEHÍCULO Y ACCESORIOS', 130, y); y += 4;
-    doc.text('77.273.194-9', 130, y); y += 3;
-    doc.text('10 NORTE #1696 TALCA', 130, y); y += 3;
-    doc.text('Email: MAXITALLERSPA@GMAIL.COM', 130, y); y += 3;
-    doc.text('Teléfono: +56961632668', 130, y);
-    y = 38;
-
-    // Folio
+    // Folio (después de "PRESUPUESTO FOLIO N°" que está en x:36, y:696.892)
     const folio = document.getElementById('folio').value;
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.text(`PRESUPUESTO FOLIO N° ${folio}`, w / 2, y, { align: 'center' });
-    y += 8;
+    page.drawText(folio || '', { x: 200, y: 696.892, size: 12, font: fontBold, color });
 
-    // Datos vehículo/cliente
-    doc.setFontSize(8);
-    const leftCol = 15;
-    const midCol = w / 2 + 5;
-    const rowH = 7;
-    const campos = [
-        ['Nro. de Ppto.', folio, 'Patente/Código', document.getElementById('patente').value],
-        ['Marca', document.getElementById('marca').value, 'Nombre Cliente', document.getElementById('nombreCliente').value],
-        ['Modelo', document.getElementById('modelo').value, 'Rut', document.getElementById('rutCliente').value],
-        ['Kilometraje / Horas', document.getElementById('kilometraje').value, 'Teléfono', document.getElementById('telefono').value],
-        ['VIN', document.getElementById('vin').value, 'Año', document.getElementById('anio').value]
+    // Datos vehiculo/cliente
+    const yRows = [674.928, 659.928, 644.928, 629.928, 614.928];
+    const leftValues = [
+        folio,
+        document.getElementById('marca').value,
+        document.getElementById('modelo').value,
+        document.getElementById('kilometraje').value,
+        document.getElementById('vin').value
     ];
+    const rightValues = [
+        document.getElementById('patente').value,
+        document.getElementById('nombreCliente').value,
+        document.getElementById('rutCliente').value,
+        document.getElementById('telefono').value,
+        document.getElementById('anio').value
+    ];
+    for (let i = 0; i < yRows.length; i++) {
+        page.drawText(leftValues[i] || '', { x: 140, y: yRows[i], size: fontSize, font, color });
+        page.drawText(rightValues[i] || '', { x: 410, y: yRows[i], size: fontSize, font, color });
+    }
 
-    campos.forEach(row => {
-        doc.rect(leftCol, y - 4.5, (w / 2) - 10, rowH);
-        doc.setFont(undefined, 'bold');
-        doc.text(row[0], leftCol + 2, y);
-        doc.setFont(undefined, 'normal');
-        doc.text(row[1] || '', leftCol + 38, y);
-        doc.rect(midCol, y - 4.5, (w / 2) - 10, rowH);
-        doc.setFont(undefined, 'bold');
-        doc.text(row[2], midCol + 2, y);
-        doc.setFont(undefined, 'normal');
-        doc.text(row[3] || '', midCol + 35, y);
-        y += rowH;
-    });
-    y += 5;
+    // Titulo de seccion (al lado del "1." que está en x:41, y:514.169)
+    const tituloSeccion = document.getElementById('tituloSeccion').value;
+    const rowStep = 15;
+    if (tituloSeccion) {
+        page.drawText(tituloSeccion.toUpperCase(), { x: 56, y: 514.169, size: 9, font: fontBold, color });
+    }
 
-    // Título tabla
-    doc.setFontSize(9);
-    doc.setFont(undefined, 'bold');
-    doc.text('INFORMACIÓN DE PRESUPUESTO', leftCol, y);
-    y += 5;
-
-    // Header tabla
-    const colX = [15, 48, 80, 135, 155, 178];
-    const colW = [33, 32, 55, 20, 23, 23];
-    const headers = ['Categoría', 'Subcategoría', 'Item', 'Cantidad', '$ Unit.', '$ Total'];
-    doc.setFillColor(52, 58, 64);
-    doc.rect(15, y - 4, w - 30, 6, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(8);
-    headers.forEach((h, i) => doc.text(h, colX[i] + 1, y));
-    doc.setTextColor(0, 0, 0);
-    y += 4;
-
-    // Filas
-    doc.setFont(undefined, 'normal');
-    doc.setFontSize(7.5);
+    // Items
     const items = getItems();
-    items.forEach(item => {
-        if (y > 245) { doc.addPage(); y = 15; }
-        colW.forEach((cw, i) => doc.rect(colX[i], y - 3.5, cw, 5));
-        doc.text(item.cat, colX[0] + 1, y);
-        doc.text(item.sub, colX[1] + 1, y);
-        doc.text(item.desc.substring(0, 35), colX[2] + 1, y);
-        doc.text(item.cant ? item.cant.toString() : '', colX[3] + 1, y);
-        doc.text(item.unit ? formatCLP(item.unit) : '', colX[4] + 1, y);
-        doc.text(formatCLP(item.cant * item.unit), colX[5] + 1, y);
-        y += 5;
-    });
+    const maxItemsPag1 = 11;
 
-    // Totales
-    y += 5;
-    doc.setFontSize(9);
-    const subtotal = document.getElementById('subtotal').textContent;
-    const neto = document.getElementById('neto').textContent;
-    const iva = document.getElementById('iva').textContent;
-    const total = document.getElementById('total').textContent;
+    if (items.length <= maxItemsPag1) {
+        // Todo en página 1
+        let itemY = 514.169 - rowStep - 5;
+        items.forEach(item => {
+            const total = item.cant * item.unit;
+            page.drawText(item.cat, { x: 46, y: itemY, size: 8, font, color });
+            page.drawText(item.sub, { x: 171, y: itemY, size: 8, font, color });
+            page.drawText(item.desc.substring(0, 40), { x: 270, y: itemY, size: 8, font, color });
+            page.drawText(item.cant ? item.cant.toString() : '', { x: 415, y: itemY, size: 8, font, color });
+            page.drawText(item.unit ? formatCLP(item.unit) : '', { x: 455, y: itemY, size: 8, font, color });
+            page.drawText(total ? formatCLP(total) : '', { x: 515, y: itemY, size: 8, font, color });
+            itemY -= rowStep;
+        });
 
-    doc.setFont(undefined, 'bold');
-    doc.text('Subtotal', 145, y); doc.text(subtotal, 180, y); y += 5;
-    doc.text('Valor Neto', 145, y); doc.text(neto, 180, y); y += 5;
-    doc.text('IVA', 145, y); doc.text(iva, 180, y); y += 5;
-    doc.text('Total', 145, y); doc.text(total, 180, y);
+        // Totales en posiciones fijas
+        page.drawText(document.getElementById('subtotal').textContent, { x: 515, y: 329.169, size: 9, font: fontBold, color });
+        page.drawText(document.getElementById('neto').textContent, { x: 515, y: 293.41, size: 9, font: fontBold, color });
+        page.drawText(document.getElementById('iva').textContent, { x: 515, y: 278.41, size: 9, font: fontBold, color });
+        page.drawText(document.getElementById('total').textContent, { x: 515, y: 256.892, size: 10, font: fontBold, color });
 
-    const fecha = new Date().toLocaleString('es-CL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
-    doc.setFont(undefined, 'normal');
-    doc.setFontSize(7);
-    doc.text(fecha, 120, y);
-    y += 10;
+        // Fecha y recepcionó en pág 1
+        const now = new Date();
+        const fecha = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        page.drawText(fecha, { x: 46, y: 256.892, size: 12, font: fontBold, color });
+        page.drawText(document.getElementById('recepciono').value || '', { x: 36, y: 40, size: 9, font, color });
+        page.drawText(document.getElementById('contactoRecepcion').value || '', { x: 196, y: 40, size: 9, font, color });
+        page.drawText(document.getElementById('emailRecepcion').value || '', { x: 376, y: 40, size: 9, font, color });
 
-    // Condiciones
-    doc.setFontSize(7);
-    doc.setFont(undefined, 'bold');
-    doc.text('CONDICIONES', leftCol, y); y += 4;
-    doc.setFont(undefined, 'normal');
-    const cond = [
-        '1. Los presupuestos se realizan de buena fe, muchas veces al desarmar se observan nuevas fallas a reparar.',
-        '2. El auto no se entrega sin previo pago de todos los trabajos autorizados.',
-        '3. No se aceptan cheques.',
-        '4. El lavado de cortesía aplica únicamente para servicios de mantención.'
-    ];
-    cond.forEach(c => { doc.text(c, leftCol, y, { maxWidth: w - 30 }); y += 4; });
+    } else {
+        // Página 1: primeros 11 ítems sin totales
+        let itemY = 514.169 - rowStep - 5;
+        items.slice(0, maxItemsPag1).forEach(item => {
+            const total = item.cant * item.unit;
+            page.drawText(item.cat, { x: 46, y: itemY, size: 8, font, color });
+            page.drawText(item.sub, { x: 171, y: itemY, size: 8, font, color });
+            page.drawText(item.desc.substring(0, 40), { x: 270, y: itemY, size: 8, font, color });
+            page.drawText(item.cant ? item.cant.toString() : '', { x: 415, y: itemY, size: 8, font, color });
+            page.drawText(item.unit ? formatCLP(item.unit) : '', { x: 455, y: itemY, size: 8, font, color });
+            page.drawText(total ? formatCLP(total) : '', { x: 515, y: itemY, size: 8, font, color });
+            itemY -= rowStep;
+        });
 
-    // Recepcionó
-    y += 3;
-    doc.setFontSize(8);
-    doc.setFont(undefined, 'bold');
-    doc.text('Recepcionó', leftCol, y);
-    doc.text('Contacto', 80, y);
-    doc.text('Email', 140, y);
-    y += 4;
-    doc.setFont(undefined, 'normal');
-    doc.text(document.getElementById('recepciono').value || '', leftCol, y);
-    doc.text('+56961632668', 80, y);
-    doc.text('MAXITALLERSPA@GMAIL.COM', 140, y);
+        // Página 2: copiar plantilla, ítems restantes + totales
+        const [templatePage2] = await pdfDoc.copyPages(pdfDoc, [0]);
+        pdfDoc.addPage(templatePage2);
+        const page2 = pdfDoc.getPages()[1];
 
-    window.open(doc.output('bloburl'), '_blank');
+        let itemY2 = 514.169 - rowStep - 5;
+        items.slice(maxItemsPag1).forEach(item => {
+            const total = item.cant * item.unit;
+            page2.drawText(item.cat, { x: 46, y: itemY2, size: 8, font, color });
+            page2.drawText(item.sub, { x: 171, y: itemY2, size: 8, font, color });
+            page2.drawText(item.desc.substring(0, 40), { x: 270, y: itemY2, size: 8, font, color });
+            page2.drawText(item.cant ? item.cant.toString() : '', { x: 415, y: itemY2, size: 8, font, color });
+            page2.drawText(item.unit ? formatCLP(item.unit) : '', { x: 455, y: itemY2, size: 8, font, color });
+            page2.drawText(total ? formatCLP(total) : '', { x: 515, y: itemY2, size: 8, font, color });
+            itemY2 -= rowStep;
+        });
+
+        // Totales en pág 2 posiciones fijas
+        page2.drawText(document.getElementById('subtotal').textContent, { x: 515, y: 329.169, size: 9, font: fontBold, color });
+        page2.drawText(document.getElementById('neto').textContent, { x: 515, y: 293.41, size: 9, font: fontBold, color });
+        page2.drawText(document.getElementById('iva').textContent, { x: 515, y: 278.41, size: 9, font: fontBold, color });
+        page2.drawText(document.getElementById('total').textContent, { x: 515, y: 256.892, size: 10, font: fontBold, color });
+
+        // Fecha y recepcionó en pág 2
+        const now = new Date();
+        const fecha = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        page2.drawText(fecha, { x: 46, y: 256.892, size: 12, font: fontBold, color });
+        page2.drawText(document.getElementById('recepciono').value || '', { x: 36, y: 40, size: 9, font, color });
+        page2.drawText(document.getElementById('contactoRecepcion').value || '', { x: 196, y: 40, size: 9, font, color });
+        page2.drawText(document.getElementById('emailRecepcion').value || '', { x: 376, y: 40, size: 9, font, color });
+    }
+
+    // Abrir en nueva pestaña
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    window.open(URL.createObjectURL(blob), '_blank');
 }
 
-// Iniciar con filas
+// Iniciar
 window.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < 3; i++) agregarFila();
 });

@@ -70,7 +70,7 @@
         </div>
 
         <!-- Datos Vehículo -->
-        <div class="section-title">🚗 Datos del Vehículo</div>
+        <div class="section-title">Datos del Vehículo</div>
         <div class="row">
             <div class="col-6 col-md-4 form-field">
                 <label>Patente/Código</label>
@@ -99,7 +99,7 @@
         </div>
 
         <!-- Datos Cliente -->
-        <div class="section-title">👤 Datos del Cliente</div>
+        <div class="section-title">Datos del Cliente</div>
         <div class="row">
             <div class="col-12 col-md-6 form-field">
                 <label>Nombre Cliente</label>
@@ -116,14 +116,19 @@
         </div>
 
         <!-- Items - Desktop -->
-        <div class="section-title">🔧 Ítems del Presupuesto</div>
+        <!-- Titulo de seccion -->
+        <div class="section-title">Items del Presupuesto</div>
+        <div class="form-field mb-2">
+            <label>Título de sección (ej: MANTENCION Y TREN DELANTERO)</label>
+            <input type="text" id="tituloSeccion" placeholder="MANTENCION Y TREN DELANTERO" style="text-transform:uppercase;">
+        </div>
         <div class="items-desktop">
             <table>
                 <thead>
                     <tr>
                         <th style="width:18%">Categoría</th>
                         <th style="width:18%">Subcategoría</th>
-                        <th style="width:28%">Descripción</th>
+                        <th style="width:28%">Ítem</th>
                         <th class="col-num">Cant.</th>
                         <th class="col-num">$ Unit.</th>
                         <th class="col-num">$ Total</th>
@@ -150,9 +155,19 @@
         </div>
 
         <!-- Recepcionó -->
-        <div class="form-field mt-3">
-            <label>Recepcionó</label>
-            <input type="text" id="recepciono" list="list-recepciono" style="max-width:300px;">
+        <div class="row mt-3">
+            <div class="col-12 col-md-4 form-field">
+                <label>Recepcionó</label>
+                <input type="text" id="recepciono" list="list-recepciono" style="max-width:300px;">
+            </div>
+            <div class="col-6 col-md-4 form-field">
+                <label>Contacto (recepción)</label>
+                <input type="tel" id="contactoRecepcion">
+            </div>
+            <div class="col-6 col-md-4 form-field">
+                <label>Email</label>
+                <input type="email" id="emailRecepcion" value="MAXITALLERSPA@GMAIL.COM">
+            </div>
         </div>
 
         <!-- Condiciones -->
@@ -166,7 +181,7 @@
 
         <!-- Botones -->
         <div class="actions text-center no-print">
-            <button class="btn btn-success btn-lg w-100" onclick="generarPDF()" style="max-width:400px;">📄 Generar PDF</button>
+            <button class="btn btn-success btn-lg w-100" onclick="generarPDF()" style="max-width:400px;">Generar PDF</button>
         </div>
     </div>
 
@@ -211,8 +226,7 @@
         <option value="SUSAN GONZALEZ">
     </datalist>
 
-    <img id="logo-img" src="../../assets/images/logo-maxitaller.jpg" style="display:none;">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="presupuesto.js"></script>
 </body>
 </html>
