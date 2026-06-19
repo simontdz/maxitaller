@@ -258,6 +258,4 @@ async function generarPDF() {
 }
 
 // Iniciar
-window.addEventListener('DOMContentLoaded', () => {
-    for (let i = 0; i < 3; i++) agregarFila();
-});
+window.addEventListener('DOMContentLoaded', () => {});
