@@ -11,9 +11,11 @@
         * { box-sizing: border-box; }
         body { background-color: #f5f5f5 !important; color: #000 !important; font-size: 14px; }
         .header-box { background: #ffffff; color: #333; padding: 12px; text-align: center; border-radius: 8px; margin-bottom: 16px; border: 1px solid #ddd; position: relative; }
-        .header-box img { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); max-height: 40px; border-radius: 4px; }
-        .header-box h4 { margin: 0; font-size: 1.3rem; }
+        .header-box img { max-height: 55px; border-radius: 4px; }
+        .header-box h4 { margin: 4px 0 0; font-size: 1.3rem; }
         .header-box small { opacity: 0.8; font-size: 0.7rem; }
+        .btn-volver { position: absolute; left: 12px; top: 12px; text-decoration: none; font-size: 1.2rem; color: #666; border: 1px solid #ddd; border-radius: 6px; transition: background 0.2s, color 0.2s; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; line-height: 1; padding: 0; }
+        .btn-volver:hover { background: #343a40; color: #fff; }
         .section-title { font-size: 0.85rem; font-weight: bold; background: #e9ecef; padding: 6px 10px; border-radius: 4px; margin: 12px 0 8px; }
         .form-field { margin-bottom: 8px; }
         .form-field label { font-size: 0.75rem; font-weight: 600; color: #555; margin-bottom: 2px; display: block; }
@@ -60,9 +62,9 @@
     <div class="container-fluid p-2 p-md-3" style="max-width: 900px; margin: auto;">
         <!-- Header -->
         <div class="header-box">
-            <img src="../../assets/images/logo-maxitaller-v2.png" alt="Maxi Taller">
-            <h4>MAXI TALLER</h4>
-            <small>Taller Mecánico | 10 Norte #1696, Talca | +56 9 6163 2668</small>
+            <a href="../../index.html" class="btn-volver no-print"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z"/></svg></a>
+            <img src="../../assets/images/logo-maxitaller-v2.png" alt="Maxi Taller"><br>
+            <small>10 Norte #1696, Talca | +56 9 6163 2668</small>
         </div>
 
         <!-- Folio -->
