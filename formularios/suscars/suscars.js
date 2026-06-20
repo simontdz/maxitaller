@@ -28,17 +28,15 @@ function agregarFilaMobile() {
     card.innerHTML = `
         <button class="btn btn-sm btn-outline-danger btn-remove no-print" onclick="this.closest('.item-card').remove();calcularTotales()">X</button>
         <div class="row-fields">
-            <input type="text" list="list-categorias" placeholder="Categoría">
-            <input type="text" list="list-subcategorias" placeholder="Subcategoría">
+            <div><label class="item-label">Categoría</label><input type="text" list="list-categorias" placeholder="Categoría"></div>
+            <div><label class="item-label">Subcategoría</label><input type="text" list="list-subcategorias" placeholder="Subcategoría"></div>
         </div>
-        <div class="row-full">
-            <input type="text" placeholder="Ítem">
-        </div>
+        <div class="row-full"><label class="item-label">Ítem</label><input type="text" placeholder="Ítem"></div>
         <div class="row-fields" style="margin-top:6px;">
-            <input type="number" min="1" step="1" value="1" placeholder="Cant." oninput="calcularTotales()">
-            <input type="text" class="precio-input" placeholder="$0" oninput="formatPrecio(this);calcularTotales()">
+            <div><label class="item-label">Cantidad</label><input type="number" min="1" step="1" value="1" oninput="calcularTotales()"></div>
+            <div><label class="item-label">Precio Unit.</label><input type="text" class="precio-input" placeholder="$0" oninput="formatPrecio(this);calcularTotales()"></div>
         </div>
-        <div class="item-total total-celda">$0</div>
+        <div class="item-total total-celda"><label class="item-label">Total</label>$0</div>
     `;
     container.appendChild(card);
 }

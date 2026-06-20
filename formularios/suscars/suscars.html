@@ -27,6 +27,7 @@
         .item-card .row-full { margin-top: 6px; }
         .item-card input, .item-card select { font-size: 14px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; }
         .item-card .item-total { font-weight: bold; font-size: 1rem; color: #198754; text-align: right; padding-top: 4px; }
+        .item-card .item-label { font-size: 0.65rem; font-weight: 600; color: #888; display: block; margin-bottom: 2px; }
         .item-card .btn-remove { position: absolute; top: 4px; right: 4px; z-index: 1; font-size: 0.8rem; padding: 4px 8px; line-height: 1; }
         .item-card-wrapper { position: relative; }
 
@@ -169,7 +170,34 @@
         </div>
 
         <!-- Items - Mobile -->
-        <div class="items-mobile" id="items-body-mobile"></div>
+        <div class="items-mobile" id="items-body-mobile">
+            <div class="item-card item-card-wrapper">
+                <button class="btn btn-sm btn-outline-danger btn-remove no-print" onclick="this.closest('.item-card').remove();calcularTotales()">X</button>
+                <div class="row-fields">
+                    <div><label class="item-label">Categoría</label><input type="text" list="list-categorias" placeholder="Categoría"></div>
+                    <div><label class="item-label">Subcategoría</label><input type="text" list="list-subcategorias" placeholder="Subcategoría"></div>
+                </div>
+                <div class="row-full"><label class="item-label">Ítem</label><input type="text" placeholder="Ítem"></div>
+                <div class="row-fields" style="margin-top:6px;">
+                    <div><label class="item-label">Cantidad</label><input type="number" min="1" step="1" value="1" oninput="calcularTotales()"></div>
+                    <div><label class="item-label">Precio Unit.</label><input type="text" class="precio-input" placeholder="$0" oninput="formatPrecio(this);calcularTotales()"></div>
+                </div>
+                <div class="item-total total-celda"><label class="item-label">Total</label>$0</div>
+            </div>
+            <div class="item-card item-card-wrapper">
+                <button class="btn btn-sm btn-outline-danger btn-remove no-print" onclick="this.closest('.item-card').remove();calcularTotales()">X</button>
+                <div class="row-fields">
+                    <div><label class="item-label">Categoría</label><input type="text" list="list-categorias" placeholder="Categoría"></div>
+                    <div><label class="item-label">Subcategoría</label><input type="text" list="list-subcategorias" placeholder="Subcategoría"></div>
+                </div>
+                <div class="row-full"><label class="item-label">Ítem</label><input type="text" placeholder="Ítem"></div>
+                <div class="row-fields" style="margin-top:6px;">
+                    <div><label class="item-label">Cantidad</label><input type="number" min="1" step="1" value="1" oninput="calcularTotales()"></div>
+                    <div><label class="item-label">Precio Unit.</label><input type="text" class="precio-input" placeholder="$0" oninput="formatPrecio(this);calcularTotales()"></div>
+                </div>
+                <div class="item-total total-celda"><label class="item-label">Total</label>$0</div>
+            </div>
+        </div>
 
         <div class="no-print mt-2">
             <button class="btn btn-sm btn-outline-primary btn-add" onclick="agregarFila()">+ Agregar ítem</button>
