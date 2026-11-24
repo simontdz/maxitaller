@@ -250,10 +250,17 @@ async function generarPDF() {
     }
 
     // Abrir en nueva pestaña
+    // Observación (última página de plantilla) y fotos (páginas extra al final)
+    const paginasPlantilla = pdfDoc.getPages();
+    Evidencia.dibujarObservacion(paginasPlantilla[paginasPlantilla.length - 1], font, fontBold, color, document.getElementById('observaciones').value);
+    await Evidencia.agregarFotos(pdfDoc, font, fontBold, color, { folio, patente: document.getElementById('patente').value, logoUrl: document.querySelector('.header-box img').getAttribute('src'), // logo sin la línea del teléfono
+        // Tamaño y posición del logo en la plantilla (para repetirlo igual en las páginas de fotos)
+        logoPos: { x: 5.7, y: 724.1, ancho: 101.5, alto: 54.1 } });
+
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     window.open(URL.createObjectURL(blob), '_blank');
 }
 
 // Iniciar
-window.addEventListener('DOMContentLoaded', () => {});
+window.addEventListener('DOMContentLoaded', () => { Evidencia.init(); });

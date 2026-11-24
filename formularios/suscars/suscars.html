@@ -19,8 +19,8 @@
         .section-title { font-size: 0.85rem; font-weight: bold; background: #e9ecef; padding: 6px 10px; border-radius: 4px; margin: 12px 0 8px; }
         .form-field { margin-bottom: 8px; }
         .form-field label { font-size: 0.75rem; font-weight: 600; color: #555; margin-bottom: 2px; display: block; }
-        .form-field input, .form-field select { font-size: 16px; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; background: #fff; }
-        .form-field input:focus, .form-field select:focus { border-color: #0d6efd; outline: none; box-shadow: 0 0 0 2px rgba(13,110,253,.15); }
+        .form-field input, .form-field select, .form-field textarea { font-size: 16px; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; background: #fff; }
+        .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: #0d6efd; outline: none; box-shadow: 0 0 0 2px rgba(13,110,253,.15); }
 
         .item-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 30px 10px 10px; margin-bottom: 8px; }
         .item-card .row-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -211,6 +211,26 @@
             <div class="row-total final"><span>Total</span><span id="total">$0</span></div>
         </div>
 
+        <!-- Observación -->
+        <div class="section-title">Observación</div>
+        <div class="form-field">
+            <textarea id="observaciones" rows="4" maxlength="700" placeholder="Observación del presupuesto (opcional)"></textarea>
+            <small class="text-muted">Se imprime en el PDF. Máximo 700 caracteres: <span id="obsContador">0/700</span></small>
+        </div>
+
+        <!-- Fotos -->
+        <div class="section-title">Fotos</div>
+        <div class="no-print">
+            <div class="d-flex gap-2 mb-2 flex-wrap">
+                <button type="button" class="btn btn-sm btn-outline-primary btn-add" onclick="document.getElementById('photoCaptureInput').click()">Tomar Foto</button>
+                <button type="button" class="btn btn-sm btn-outline-primary btn-add" onclick="document.getElementById('photoGalleryInput').click()">Galería</button>
+            </div>
+            <input type="file" id="photoCaptureInput" accept="image/*" capture="environment" class="d-none">
+            <input type="file" id="photoGalleryInput" accept="image/*" multiple class="d-none">
+            <div id="photoPreview" class="row"></div>
+            <small class="text-muted">Máximo 16 fotos. Van al final del PDF, 4 por página.</small>
+        </div>
+
         <!-- Recepcionó -->
         <div class="row mt-3">
             <div class="col-12 col-md-4 form-field">
@@ -284,6 +304,7 @@
     </datalist>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="../../assets/js/evidencia.js"></script>
     <script src="suscars.js"></script>
 </body>
 </html>

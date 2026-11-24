@@ -18,6 +18,8 @@ Abrir `index.html` en un navegador y seleccionar el taller correspondiente.
 - Cálculo automático de totales, valor neto, IVA (19%) y total final
 - Generación de PDF sobre plantilla personalizada por taller
 - Soporte multi-página: si hay más de 11 ítems se genera una segunda página con los ítems restantes y totales
+- Observación opcional (hasta 700 caracteres), impresa sobre el pie del PDF. Si el texto es largo, se reduce a 7 pt para que quepa
+- Fotos opcionales desde la cámara o la galería (hasta 16): se comprimen, se pueden girar o eliminar, y van al final del PDF, 4 por página, con el logo y el folio/patente en el encabezado
 - Responsive (móvil y desktop)
 
 ## Estructura
@@ -33,5 +35,7 @@ Abrir `index.html` en un navegador y seleccionar el taller correspondiente.
 │   ├── Suscars.pdf             # Plantilla con totales
 │   └── Suscars - v2.pdf        # Plantilla sin totales (pág 1 multi-página)
 └── assets/
-    └── images/                 # Logos
+    ├── images/                 # Logos
+    └── js/
+        └── evidencia.js        # Observación y fotos (compartido por ambos formularios)
 ```

@@ -249,10 +249,17 @@ async function generarPDF() {
         page2.drawText(document.getElementById('emailRecepcion').value || '', { x: 376, y: 40, size: 9, font, color });
     }
 
+    // Observación (última página de plantilla) y fotos (páginas extra al final)
+    const paginasPlantilla = pdfDoc.getPages();
+    Evidencia.dibujarObservacion(paginasPlantilla[paginasPlantilla.length - 1], font, fontBold, color, document.getElementById('observaciones').value);
+    await Evidencia.agregarFotos(pdfDoc, font, fontBold, color, { folio, patente: document.getElementById('patente').value, logoUrl: document.querySelector('.header-box img').getAttribute('src'),
+        // Tamaño y posición del logo en la plantilla (para repetirlo igual en las páginas de fotos)
+        logoPos: { x: 1.6, y: 731.6, ancho: 105.7, alto: 47.8 } });
+
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     window.open(URL.createObjectURL(blob), '_blank');
 }
 
 // Iniciar
-window.addEventListener('DOMContentLoaded', () => {});
+window.addEventListener('DOMContentLoaded', () => { Evidencia.init(); });
